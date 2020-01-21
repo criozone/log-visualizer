@@ -6,9 +6,15 @@ var FilePointer = FSO.OpenTextFile(appPath + '\\config.json', 1, false);
 var appConfig = JSON.parse(FilePointer.ReadAll());
 FilePointer.Close();
 
+//Filters config
+var appFilters = {};
+
 // Init
+var fileMapper = {};
 for (var i = 0; i < appConfig.logFiles.length; i++) {
     appConfig.logFiles[i].readLogsFlag = true;
+    fileMapper[appConfig.logFiles[i].id] = i;
+    appFilters[appConfig.logFiles[i].id] = false;
 }
 
 // Set global vars and listeners

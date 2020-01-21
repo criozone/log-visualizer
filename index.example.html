@@ -11,12 +11,17 @@
 <div id="container">
     <div id="navbar"></div>
     <div id="content-wraper">
+        <div id="swap_down"></div>
         <div id="sidebar">
             <div id="command-buttons">
                 <a title="expand/collapse all" id="unfold-button"  style="cursor: pointer; display: block; width: 40px; height: 40px; margin: 0; padding: 0; background-image: url('./images/expand_button_white.png'); background-size: contain;"></a>
             </div>
             <p class="sidebar-header">Filters</p>
-            <button id="test-button">Filter</button>
+            <div id="filters-container">
+                <p><input id="mc" type="checkbox" data-log-type="mc" /><label for="mc">MC</label></p>
+                <p><input id="sc" type="checkbox" data-log-type="sc" /><label for="sc">SC</label></p>
+                <p><input id="bus" type="checkbox" data-log-type="bus" /><label for="bus">BUS</label></p>
+            </div>
         </div>
         <div id="content">
             <div class="log-item" id="test-item1" style="width: 100%; background-color: burlywood; font-size: 1em; border-bottom: 1px solid chocolate; padding: 5px;">

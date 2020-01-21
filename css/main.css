@@ -120,3 +120,28 @@ body {
     font-family: cursive;
 }
 
+#filters-container p {
+    margin-bottom: 5px;
+    font-size: 12px;
+}
+
+#filters-container p *{
+    cursor: pointer;
+}
+
+#filters-container p label:hover{
+    color: cornflowerblue;
+    font-size: 14px;
+}
+
+#swap_down {
+    position: fixed;
+    top: 50px;
+    right: 100px;
+    width: 100px;
+    height: 100px;
+    background-image: url("../images/swap_up.png");
+    background-size: contain;
+    opacity: 0.3;
+    cursor: pointer;
+}

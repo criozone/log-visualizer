@@ -12,12 +12,72 @@ window.onload = function() {
     }
 
     var clearLogsBtn = document.getElementById('clear-logs')
-
     if (clearLogsBtn) {
         clearLogsBtn.addEventListener('click', clearLogs, false);
     }
 
+    var swpapDownBtn = document.getElementById('swap_down');
+    if (swpapDownBtn) {
+        swpapDownBtn.addEventListener('click', function (e) {
+            document.getElementById('mock').scrollIntoView();
+        }, false);
+    }
+
+    initFilters();
     readLogs();
+}
+
+function initFilters() {
+    var filtersContainer = document.getElementById('filters-container');
+    var checkbox, pElem, label;
+    for (var i = 0; i < appConfig.logFiles.length; i++) {
+        checkbox = document.createElement('input');
+        checkbox.type = "checkbox";
+        checkbox.id = appConfig.logFiles[i].id;
+
+        label = document.createElement('label')
+        label.htmlFor = appConfig.logFiles[i].id;
+        label.appendChild(document.createTextNode(appConfig.logFiles[i].id.toUpperCase()));
+
+        checkbox.addEventListener('click', filterLogs, false);
+
+        pElem = document.createElement('p');
+        pElem.appendChild(checkbox);
+        pElem.appendChild(label)
+
+        filtersContainer.appendChild(pElem);
+    }
+}
+
+function filterLogs(e) {
+    appFilters[e.target.id] = this.checked;
+    updateView();
+}
+
+function updateView() {
+
+    var logItemsColl = document.querySelectorAll('.log-item');
+
+    //console.log(logItemsColl.length);
+
+    for (var i = 0; i < logItemsColl.length; i++) {
+        if (isfiltrationEnabled()) {
+            if (!appFilters[logItemsColl[i].getAttribute('data-file-id')]) {
+                logItemsColl[i].style.display = "none";
+            } else {
+                logItemsColl[i].style.display = "block";
+            }
+        } else {
+            logItemsColl[i].style.display = "block";
+        }
+    }
+}
+
+function isfiltrationEnabled() {
+    for (var prop in appFilters) {
+        if (appFilters[prop]) return true;
+    }
+    return false;
 }
 
 function clearLogs() {
@@ -190,7 +250,11 @@ function readLogs() {
             logItemsArray[i].logElem.setAttribute('data-file-id', logItemsArray[i].fileId);
             logItemsArray[i].logElem.setAttribute('data-item-type', logItemsArray[i].logItemType);
             logItemsArray[i].logElem.setAttribute('data-item-time', logItemsArray[i].logTime);
+            logItemsArray[i].logElem.setAttribute('title', appConfig.logFiles[fileMapper[logItemsArray[i].fileId]].path);
             logsContainerElem.appendChild(logItemsArray[i].logElem);
+            if (isfiltrationEnabled() && !appFilters[logItemsArray[i].fileId]) {
+                logItemsArray[i].logElem.style.display = "none";
+            }
         }
     }
 
@@ -313,7 +377,6 @@ function stopMonitor() {
 }
 
 function checkChanges() {
-    console.log('here');
     if (!monitorFlag) {
         return;
     }

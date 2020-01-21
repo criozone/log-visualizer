@@ -21,7 +21,7 @@
     <meta http-equiv="x-ua-compatible" content="ie=edge" />
     <title>LogVisualizer</title>
     <link rel="stylesheet" type="text/css" href="css/main.css" />
-    <!--<script type="text/javascript" src="js/lib/htaconsole.js" ></script>-->
+    <script type="text/javascript" src="js/lib/htaconsole.js" ></script>
     <script type="text/javascript" src="js/src/polyfills.js" ></script>
     <script type="text/javascript" src="js/src/config.js" ></script>
     <script type="text/javascript" src="js/src/main.js" ></script>
@@ -31,10 +31,12 @@
 <div id="container">
     <!--<div id="navbar"></div>-->
     <div id="content-wraper">
+        <div id="swap_down"></div>
         <div id="sidebar">
             <button id="clear-logs" style="width: 100%; margin-bottom: 10px; margin-top: 10px">Clear logs</button>
             <input id="monitor" name="monitor" type="checkbox" checked /> <label for="monitor">Monitor changes</label>
             <p class="sidebar-header">Filters</p>
+            <div id="filters-container"></div>
         </div>
         <div id="content">
         </div>
