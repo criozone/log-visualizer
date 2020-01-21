@@ -1,0 +1,32 @@
+{
+  "logFiles": [
+    {
+      "id": "mc",
+      "path" : "D:\\src\\api_2_0\\mc\\storage\\logs\\application.log",
+      "log_separator_regex": "/[\\+]{3,}/",
+      "info_part_regex": ".*local\\.\\w+\\:.*?\\{",
+      "lastModified": ""
+    },
+    {
+      "id": "bus",
+      "path" : "D:\\src\\api_2_0\\bus\\storage\\logs\\application.log",
+      "logSeparatorRegex": "/[\\+]{3,}/",
+      "infoPartRegex": ".*local\\.\\w+\\:.*?\\{",
+      "lastModified": ""
+    },
+    {
+      "id": "sc",
+      "path" : "D:\\src\\api_2_0\\scenario\\storage\\logs\\application.log",
+      "logSeparatorRegex": "/[\\+]{3,}/",
+      "infoPartRegex": ".*local\\.\\w+\\:.*?\\{",
+      "lastModified": ""
+    },
+    {
+      "id": "fs",
+      "path" : "D:\\src\\front-server\\front-server-php\\storage\\logs\\application.log",
+      "logSeparatorRegex": "/[\\+]{3,}/",
+      "infoPartRegex": ".*local\\.\\w+\\:.*?\\{",
+      "lastModified": ""
+    }
+  ]
+}

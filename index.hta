@@ -1,0 +1,46 @@
+<!doctype html>
+<html>
+<head>
+    <HTA:APPLICATION ID="oHTA"
+                     APPLICATIONNAME="LogVisualizer"
+                     BORDER="thin"
+                     BORDERSTYLE="normal"
+                     CAPTION="yes"
+                     maximizeButton="yes"
+                     minimizeButton="yes"
+                     ICON=""
+                     SHOWINTASKBAR="yes"
+                     SINGLEINSTANCE="yes"
+                     SYSMENU="yes"
+                     VERSION="1.0"
+                     WINDOWSTATE="normal"
+                     scroll="yes"
+                     selection="yes"
+    />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge" />
+    <title>LogVisualizer</title>
+    <link rel="stylesheet" type="text/css" href="css/main.css" />
+    <!--<script type="text/javascript" src="js/lib/htaconsole.js" ></script>-->
+    <script type="text/javascript" src="js/src/polyfills.js" ></script>
+    <script type="text/javascript" src="js/src/config.js" ></script>
+    <script type="text/javascript" src="js/src/main.js" ></script>
+</head>
+
+<body>
+<div id="container">
+    <!--<div id="navbar"></div>-->
+    <div id="content-wraper">
+        <div id="sidebar">
+            <button id="clear-logs" style="width: 100%; margin-bottom: 10px; margin-top: 10px">Clear logs</button>
+            <input id="monitor" name="monitor" type="checkbox" checked /> <label for="monitor">Monitor changes</label>
+            <p class="sidebar-header">Filters</p>
+        </div>
+        <div id="content">
+        </div>
+    </div>
+</div>
+</body>
+
+
+</html>
