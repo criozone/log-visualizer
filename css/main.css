@@ -1,0 +1,122 @@
+a, a:hover, a:visited {
+    color: black;
+    text-decoration: none;
+}
+
+p {
+    margin: 0;
+}
+
+body {
+    overflow: hidden;
+    margin: 0;
+}
+
+#container {
+
+}
+
+#content {
+    height: 100vh;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding-top: 10px;
+}
+
+/*content-wraper*/
+
+#navbar {
+    height: 50px;
+    background: linear-gradient(0deg,#414141 0,#373636);
+}
+
+#content-wraper {
+    height: 100%;
+}
+
+#sidebar {
+    height: 100vh;
+    float: left;
+    background: linear-gradient(0deg,#414141 0,#373636);
+    width: 200px;
+    padding: 5px;
+    color: #fff;
+}
+
+.sidebar-header {
+    font-size: 1.5em;
+    text-align: center;
+    margin-bottom: 5px;
+    margin-top: 10px;
+}
+
+.log-expand {
+    text-align: center;
+    height: 20px;
+    width: 20px;
+    font-weight: bold;
+    display: inline-block;
+    background-image: url("../images/expand.png");
+    background-size: contain;
+    cursor: pointer;
+    margin-right: 15px;
+}
+
+.selected .log-expand {
+    background-image: url("../images/collapse_white_24x24.png");
+}
+
+.log-item-header {
+    width: 100%;
+    background-color: burlywood;
+    font-size: 14px;
+    line-height: 1.5;
+    height: 19px;
+    border-bottom: 1px solid chocolate;
+    padding: 5px;
+    overflow:hidden;
+}
+
+.log-item-body {
+    overflow-y: hidden;
+    overflow-x: auto;
+    height: 0;
+}
+
+.selected .log-item-body {
+    height: auto;
+    background-color: #373636;
+    color: #fff;
+}
+
+.selected .log-item-header {
+    height: auto;
+    background-color: #373636;
+    color: #fff;
+}
+
+.log-type {
+    color: navy;
+}
+
+.selected .log-type {
+    color: burlywood;
+}
+
+.log-service {
+    font-weight: bold;
+}
+
+.selected .log-service {
+    font-weight: bold;
+}
+
+.log-message {
+    font-family: cursive;
+    font-size: 12px;
+}
+
+.selected .log-message {
+    font-family: cursive;
+}
+
