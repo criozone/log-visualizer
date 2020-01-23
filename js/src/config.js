@@ -35,6 +35,4 @@ document.addEventListener('keyup', function(e) {
 var monitorFlag = true;
 var monitorIntervalId;
 
-const END_OF_STRING_DELIMITER = '191';
-const BRACKET_EXPANDER = '9032';
-
+var jsFormatter = new JsonFormatter();

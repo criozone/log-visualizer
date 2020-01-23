@@ -4,7 +4,10 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <title>LogVisualizer</title>
     <link rel="stylesheet" type="text/css" href="css/main.css" />
-    <script type="module" src="js/src/main.js" ></script>
+    <!--<script type="text/javascript" src="js/src/polyfills.js" ></script>
+    <script type="text/javascript" src="js/src/json_formatter.js" ></script>
+    <script type="text/javascript" src="js/src/config.js" ></script>
+    <script type="module" src="js/src/main.js" ></script>-->
 </head>
 
 <body>
@@ -125,6 +128,177 @@
         </div>
     </div>
 </div>
+<script>
+    if (!String.prototype.repeat) {
+        String.prototype.repeat = function(count) {
+            'use strict';
+            if (this == null) {
+                throw new TypeError('can\'t convert ' + this + ' to object');
+            }
+            var str = '' + this;
+            count = +count;
+            if (count != count) {
+                count = 0;
+            }
+            if (count < 0) {
+                throw new RangeError('repeat count must be non-negative');
+            }
+            if (count == Infinity) {
+                throw new RangeError('repeat count must be less than infinity');
+            }
+            count = Math.floor(count);
+            if (str.length == 0 || count == 0) {
+                return '';
+            }
+            // Обеспечение того, что count является 31-битным целым числом, позволяет нам значительно
+            // соптимизировать главную часть функции. Впрочем, большинство современных (на август
+            // 2014 года) браузеров не обрабатывают строки, длиннее 1 << 28 символов, так что:
+            if (str.length * count >= 1 << 28) {
+                throw new RangeError('repeat count must not overflow maximum string size');
+            }
+            var rpt = '';
+            for (var i = 0; i < count; i++) {
+                rpt += str;
+            }
+            return rpt;
+        }
+    }
+
+    if (!Object.assign) {
+        Object.defineProperty(Object, 'assign', {
+            enumerable: false,
+            configurable: true,
+            writable: true,
+            value: function(target, firstSource) {
+                'use strict';
+                if (target === undefined || target === null) {
+                    throw new TypeError('Cannot convert first argument to object');
+                }
+
+                var to = Object(target);
+                for (var i = 1; i < arguments.length; i++) {
+                    var nextSource = arguments[i];
+                    if (nextSource === undefined || nextSource === null) {
+                        continue;
+                    }
+
+                    var keysArray = Object.keys(Object(nextSource));
+                    for (var nextIndex = 0, len = keysArray.length; nextIndex < len; nextIndex++) {
+                        var nextKey = keysArray[nextIndex];
+                        var desc = Object.getOwnPropertyDescriptor(nextSource, nextKey);
+                        if (desc !== undefined && desc.enumerable) {
+                            to[nextKey] = nextSource[nextKey];
+                        }
+                    }
+                }
+                return to;
+            }
+        });
+    }
+</script>
+<script>
+    var JsonFormatter = function(config) {
+        const BRACKET_EXPANDER = '9032';
+        const END_OF_STRING_DELIMITER = '191';
+
+        if (typeof config !== 'object') {
+            config = {};
+        }
+
+        var _config = Object.assign({
+            "bracketExpanderCode":  BRACKET_EXPANDER,
+            "tabSpaceQuantity": 4,
+            "expanderStyles": "cursor: pointer; font-weight: bold",
+            "expanderClass": "json-expander"
+        }, config);
+
+        var resultStr = '', openTags = ['{', '['], closingTags = ['}', ']'], depth = 0, ctarget = 0,
+            formatJson = function(jsonStr) {
+                var currentChar;
+                jsonStr = prepareString(jsonStr);
+
+                for (var i = 0; i < jsonStr.length; i++) {
+                    currentChar = jsonStr.charAt(i);
+                    if (openTags.indexOf(currentChar) > -1) {
+                        resultStr += currentChar + '<span style="' + _config.expanderStyles + '" class="' + _config.expanderClass + '" data-collapse-target="ctarget' + ctarget + '" >'
+                            +String.fromCharCode(_config.bracketExpanderCode)+'</span>' + '<span id="ctarget' + ctarget + '" >';
+                        depth++;
+                        ctarget++;
+                    } else if (jsonStr.charCodeAt(i) == END_OF_STRING_DELIMITER) {
+                        resultStr += '<br>'+' '.repeat(depth * _config.tabSpaceQuantity);
+                    } else if (closingTags.indexOf(currentChar) > -1) {
+                        depth--;
+                        resultStr += '<br>' + ' '.repeat(depth*_config.tabSpaceQuantity)+'</span>'+currentChar;
+                    } else {
+                        resultStr += currentChar;
+                    }
+                }
+                return resultStr;
+            },
+            prepareString = function(inStr) {
+                var outStr = '';
+
+                var reg = /([\{\[])/g;
+                outStr = inStr.replace(reg, '$1'+String.fromCharCode(END_OF_STRING_DELIMITER));
+
+                reg = /(\}\s*,)/g;
+                outStr = outStr.replace(reg, '$1'+String.fromCharCode(END_OF_STRING_DELIMITER));
+
+                reg = /(\]\s*,)/g;
+                outStr = outStr.replace(reg, '$1'+String.fromCharCode(END_OF_STRING_DELIMITER));
+
+                reg = /"\s*,\s*"/g;
+                outStr = outStr.replace(reg, '",'+String.fromCharCode(END_OF_STRING_DELIMITER)+'"');
+
+                reg = /\:\s*null\s*,\s*"/g;
+                outStr = outStr.replace(reg, '"null,'+String.fromCharCode(END_OF_STRING_DELIMITER)+'"');
+
+                outStr = handleNestedBrackets(outStr);
+
+                //TODO: доработать случаи: "key": null,; "key": 123456,
+
+                return outStr;
+            },
+            handleNestedBrackets = function(inStr) {
+                var outStr = '';
+                var hasMatch = false;
+
+                if (inStr.match(/\}\s*\}/)) { //  }}
+                    hasMatch = true;
+                    inStr = inStr.replace(/\}\s*\}/g, '}'+ String.fromCharCode(END_OF_STRING_DELIMITER) +'}');
+                } else if (inStr.match(/\}\s*\]/)) {  // }]
+                    hasMatch = true;
+                    inStr = inStr.replace(/\}\s*\]/g, '}'+ String.fromCharCode(END_OF_STRING_DELIMITER) +']');
+                } else if (inStr.match(/\]\s*\}/)) {  // ]}
+                    hasMatch = true;
+                    inStr = inStr.replace(/\]\s*\}/g, ']'+ String.fromCharCode(END_OF_STRING_DELIMITER) +'}');
+                } else if (inStr.match(/\]\s*\]/)) {  // ]]
+                    hasMatch = true;
+                    inStr = inStr.replace(/\]\s*\]/g, ']'+ String.fromCharCode(END_OF_STRING_DELIMITER) +']');
+                }
+                if (hasMatch) {
+                    inStr = handleNestedBrackets(inStr);
+                }
+                return inStr;
+            };
+
+
+        return {formatJson: formatJson};
+    };
+</script>
+<script>
+    var jsFormatter = new JsonFormatter();
+    var testStr = '{"build_version":"none","code_version":"none","x_request_id":"95c1774c58bc4884a96a0d3b0dbbb48d","request":{"sender":"GuzzleHttp/6.5.1 curl/7.29.0 PHP/7.2.24","uri":"http://mc.local/v1/shop-bill/v1/get-orders/v1","method":"POST","headers":{"content-length":["273"],"cookie":["PHPSESSID=0ho0f1abpm2d8uho2cqkiduqapsdemkp"],"user-fingerprint":[""],"x-request-id":["95c1774c58bc4884a96a0d3b0dbbb48d"],"accept-language":["ru"],"host":["mc.local"],"content-type":["application/json"],"user-agent":["GuzzleHttp/6.5.1 curl/7.29.0 PHP/7.2.24"]},"cookies":{"PHPSESSID":"0ho0f1abpm2d8uho2cqkiduqapsdemkp"},"body":{"uid":null,"skip":"0","take":"20","filter":{"start_date":"02.01.2020","end_date":"09.01.2020","description":null,"bill_number":null,"auth_code":null,"card_mask":null,"gate_type":null,"shop_bill_id":null,"attribute1":null,"status":[]},"sort":[{"field":"payDate","dir":"desc"}]}},"response":{"headers":{"cache-control":["no-cache, private"],"date":["Thu, 09 Jan 2020 14:06:31 GMT"],"content-type":["application/json"],"set-cookie":["PHPSESSID=0ho0f1abpm2d8uho2cqkiduqapsdemkp; path=/"]},"body":{"result":"1","data":[]}}}';
+    var formatted;
+    var tempElem = document.createElement('div');
+    for (var i = 0; i < 10; i++) {
+        formatted = jsFormatter.formatJson(testStr);
+        tempElem = document.createElement('div');
+        tempElem.innerHTML = '<pre>' + formatted + '</pre>';
+        document.getElementById('content').appendChild(tempElem);
+    }
+
+</script>
 </body>
 
 

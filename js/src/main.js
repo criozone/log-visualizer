@@ -128,8 +128,8 @@ function createLogItemElem(logStr) {
     logBodyElem.setAttribute("class", "log-item-body");
 
     logHeaderElem.innerHTML = '<span class="log-expand"></span>' + infoPart;
-    jsonPart = formatJson(jsonPart, logBodyElem);
-    logBodyElem.innerHTML = '<pre>' + jsonPart + '</pre>';
+    jsonPart = jsFormatter.formatJson(jsonPart);
+    logBodyElem.innerHTML = '<div>' + jsonPart + '</div>';
 
     var expandersCollection = logBodyElem.querySelectorAll('span.json-expander')
     for (var i=0; i < expandersCollection.length; i++) {
@@ -270,81 +270,6 @@ function getLastModified(path) {
 
 function getJsonPart(logStr) {
     return logStr.slice(logStr.indexOf('{"'));
-}
-
-var ctarget = 0;
-function formatJson(jsonStr) {
-    var resultStr = '';
-    var openTags = ['{', '['];
-    var closingTags = ['}', ']'];
-    var depth = 0;
-    var depthMultiplier = 4; // количество пробелов
-    var currentChar;
-
-    jsonStr = prepareString(jsonStr);
-
-    for (var i = 0; i < jsonStr.length; i++) {
-        currentChar = jsonStr.charAt(i);
-        if (openTags.indexOf(currentChar) > -1) {
-            resultStr += currentChar + '<span style="cursor: pointer; font-weight: bold" class="json-expander" data-collapse-target="ctarget' + ctarget + '" >'
-                +String.fromCharCode(BRACKET_EXPANDER)+'</span>' + '<span id="ctarget' + ctarget + '" >';
-            depth++;
-            ctarget++;
-        } else if (jsonStr.charCodeAt(i) == END_OF_STRING_DELIMITER) {
-            resultStr += '<br>'+' '.repeat(depth * depthMultiplier);
-        } else if (closingTags.indexOf(currentChar) > -1) {
-            depth--;
-            resultStr += '<br>' + ' '.repeat(depth*depthMultiplier)+'</span>'+currentChar;
-        } else {
-            resultStr += currentChar;
-        }
-    }
-    return resultStr;
-}
-
-function prepareString(inStr) {
-    var outStr = '';
-
-    var reg = /([\{\[])/g;
-    outStr = inStr.replace(reg, '$1'+String.fromCharCode(END_OF_STRING_DELIMITER));
-
-    reg = /(\}\s*,)/g;
-    outStr = outStr.replace(reg, '$1'+String.fromCharCode(END_OF_STRING_DELIMITER));
-
-    reg = /(\]\s*,)/g;
-    outStr = outStr.replace(reg, '$1'+String.fromCharCode(END_OF_STRING_DELIMITER));
-
-    reg = /"\s*,\s*"/g;
-    outStr = outStr.replace(reg, '",'+String.fromCharCode(END_OF_STRING_DELIMITER)+'"');
-
-    outStr = handleNestedBrackets(outStr);
-
-    //TODO: доработать случаи: "key": null,; "key": 123456,
-
-    return outStr;
-}
-
-function handleNestedBrackets(inStr) {
-    var outStr = '';
-    var hasMatch = false;
-
-    if (inStr.match(/\}\s*\}/)) { //  }}
-        hasMatch = true;
-        inStr = inStr.replace(/\}\s*\}/g, '}'+ String.fromCharCode(END_OF_STRING_DELIMITER) +'}');
-    } else if (inStr.match(/\}\s*\]/)) {  // }]
-        hasMatch = true;
-        inStr = inStr.replace(/\}\s*\]/g, '}'+ String.fromCharCode(END_OF_STRING_DELIMITER) +']');
-    } else if (inStr.match(/\]\s*\}/)) {  // ]}
-        hasMatch = true;
-        inStr = inStr.replace(/\]\s*\}/g, ']'+ String.fromCharCode(END_OF_STRING_DELIMITER) +'}');
-    } else if (inStr.match(/\]\s*\]/)) {  // ]]
-        hasMatch = true;
-        inStr = inStr.replace(/\]\s*\]/g, ']'+ String.fromCharCode(END_OF_STRING_DELIMITER) +']');
-    }
-    if (hasMatch) {
-        inStr = handleNestedBrackets(inStr);
-    }
-    return inStr;
 }
 
 function getInfoPart(logStr) {
